@@ -62,7 +62,7 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
     }
     catch(e){
       setState(() {
-        errorDisplay = e.toString();
+        errorDisplay = "error to get RTA";
       });
       // print(e);
     }
@@ -91,6 +91,7 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
               ),
               onTap: () => launchUrlString(bankAppUrl)
             ),
+            Text(errorDisplay),
             const SizedBox(height: 20),
             ElevatedButton(
                 onPressed: () {
