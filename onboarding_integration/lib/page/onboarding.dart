@@ -13,8 +13,8 @@ class OnboardingGenerateRTA extends StatefulWidget {
 
 class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
 
-  // String token = "";
   String bankAppUrl = "";
+  String errorDisplay = "";
 
   @override
   Widget build(BuildContext context) {
@@ -57,33 +57,49 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
         bankAppUrl = de["bankAppUrl"];
         bankAppUrl = bankAppUrl.replaceAll("{Token}", de["token"]);
       });
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      // print('Response status: ${response.statusCode}');
+      // print('Response body: ${response.body}');
     }
     catch(e){
-      print(e);
+      setState(() {
+        errorDisplay = e.toString();
+      });
+      // print(e);
     }
     }
 
-    return Center(
-      child: Column(
-        children: [
-          TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            const Text("Identity Numbers"),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ),
-          ),
-          InkWell(
-            child: Text(bankAppUrl),
-            onTap: () => launchUrlString(bankAppUrl)
-          ),
-          ElevatedButton(
-              onPressed: () {
-                postData(controller.text);
-              },
-              child: const Text("Get RTA")),
-        ],
+            const SizedBox(height: 20),
+            InkWell(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: Text(bankAppUrl)
+              ),
+              onTap: () => launchUrlString(bankAppUrl)
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  postData(controller.text);
+                },
+                child: const Text("Get RTA")),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
