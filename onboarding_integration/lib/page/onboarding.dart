@@ -23,11 +23,16 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
     void postData(String id) async {
       try{
       final now = DateTime.now().toIso8601String();
-
+      // String url = "http://10.136.110.36:9091/api/mbanking-service/AuthorizationService/api/v1/authorization/authorize-requests";
+      String url = "https://10.136.100.123:463/AuthorizationService/api/v1/authorization/authorize-requests";
+      
       final response = await http.post(
         Uri.parse(
-            'http://10.136.110.36:9091/api/mbanking-service/AuthorizationService/api/v1/authorization/authorize-requests'),
-        headers: {"Content-Type": "application/json"},
+            url),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          },
         body: jsonEncode(
         {
           "partnerInfo": {
@@ -62,7 +67,7 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
     }
     catch(e){
       setState(() {
-        errorDisplay = "error to get RTA";
+        errorDisplay = "error to get RTA: " + e.toString();
       });
       // print(e);
     }
