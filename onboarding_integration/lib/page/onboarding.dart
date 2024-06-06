@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:onboarding_integration/page/GetRTAResponse.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:uuid/uuid.dart';
 
@@ -91,7 +92,8 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
       );
       setState(() {
         final de = jsonDecode(response.body);
-        rtaGetStatusResponse = de.toString();
+        var myData = GetRTAResponse.fromJson(de);
+        rtaGetStatusResponse = "Status: " + myData.authorizationDetail!.status!;
       });
     }
     catch(e){
@@ -129,6 +131,9 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
             ElevatedButton(
                 onPressed: () {
                   postData(controller.text);
+                  setState(() {
+                    errorDisplay = "";
+                  });
                 },
                 child: const Text("Request RTA")),
             const SizedBox(height: 20),
