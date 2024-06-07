@@ -138,7 +138,9 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
                 },
                 child: const Text("Get RTA Status")),
             const SizedBox(height: 20),
-            Text(rtaGetStatusResponse),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: Text(rtaGetStatusResponse)),
             const SizedBox(height: 20),
           ],
         ),
