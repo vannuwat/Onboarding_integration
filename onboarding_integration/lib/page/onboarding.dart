@@ -45,7 +45,7 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
                   "transType": "APP2APP"
                 },
                 "callBackInfo": {
-                  "osPlatform": "IOS",
+                  "osPlatform": "ANDROID",
                   "partnerAppUrl": callbackUrl
                 },
                 "channelHeader": {
