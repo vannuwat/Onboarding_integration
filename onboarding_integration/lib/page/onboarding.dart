@@ -12,7 +12,6 @@ class OnboardingGenerateRTA extends StatefulWidget {
 }
 
 class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
-
   String token = "";
   String bankAppUrl = "";
   String errorDisplay = "";
@@ -23,82 +22,77 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
     TextEditingController controller = TextEditingController();
 
     void postData(String id) async {
-      try{
-      final now = DateTime.now().toIso8601String();
-      String url = "http://10.136.110.36:9091/api/mbanking-service/AuthorizationService/api/v1/authorization/authorize-requests";
-      // String url = "https://10.136.100.123:463/AuthorizationService/api/v1/authorization/authorize-requests";
-      
-      final response = await http.post(
-        Uri.parse(
-            url),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          },
-        body: jsonEncode(
-        {
-          "partnerInfo": {
-            "partnerNameTH": "BeMerchantNextGen",
-            "partnerNameEN": "BeMerchantNextGen"
-          },
-          "rtaInfo": {
-            "identifier": id,
-            "requestDateTime": now,
-            "transType": "APP2APP"
-          },
-          "callBackInfo": {
-            "osPlatform": "IOS",
-            "partnerAppUrl": "bemerchantnextgenn://"
-          },
-          "channelHeader": {
-            "correlationId": Uuid().v4(),
-            "customerId": "0000202130118815",
-            "requestDateTime": now,
-            "language": "TH-th"
-          }
-        },
-      ));
-      setState(() {
-        final de = jsonDecode(response.body);
-        token = de["token"];
-        bankAppUrl = de["bankAppUrl"];
-        bankAppUrl = bankAppUrl.replaceAll("{Token}", de["token"]) + "&callback_url=https://www.google.com";
-      });
-      // print('Response status: ${response.statusCode}');
-      // print('Response body: ${response.body}');
-    }
-    catch(e){
-      setState(() {
-        errorDisplay = "error to get RTA: " + e.toString();
-      });
-      // print(e);
-    }
+      try {
+        final now = DateTime.now().toIso8601String();
+        String url =
+            "http://10.136.110.36:9091/api/mbanking-service/AuthorizationService/api/v1/authorization/authorize-requests";
+        String callbackUrl = "thisapp://";
+
+        final response = await http.post(Uri.parse(url),
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: jsonEncode(
+              {
+                "partnerInfo": {
+                  "partnerNameTH": "BeMerchantNextGen",
+                  "partnerNameEN": "BeMerchantNextGen"
+                },
+                "rtaInfo": {
+                  "identifier": id,
+                  "requestDateTime": now,
+                  "transType": "APP2APP"
+                },
+                "callBackInfo": {
+                  "osPlatform": "IOS",
+                  "partnerAppUrl": callbackUrl
+                },
+                "channelHeader": {
+                  "correlationId": const Uuid().v4(),
+                  "customerId": "0000202130118815",
+                  "requestDateTime": now,
+                  "language": "TH-th"
+                }
+              },
+            ));
+        setState(() {
+          final de = jsonDecode(response.body);
+          token = de["token"];
+          bankAppUrl = de["bankAppUrl"];
+          // "bankAppUrl": "bualuangmbankingapp://mbanking.beMerchantAuthen?token={Token}",
+
+          bankAppUrl =
+              "${bankAppUrl.replaceAll("{Token}", de["token"])}&callback_url=${Uri.encodeComponent(callbackUrl)}";
+        });
+      } catch (e) {
+        setState(() {
+          errorDisplay = "error to get RTA: $e";
+        });
+      }
     }
 
     void getData(String token) async {
-      try{
-      // final now = DateTime.now().toIso8601String();
-      String url = "http://10.136.110.36:9091/api/mbanking-service/AuthorizationService/api/v1/authorization/authorize-requests?token=" + token;
-      // String url = "https://10.136.100.123:463/AuthorizationService/api/v1/authorization/authorize-requests";
-      
-      final response = await http.get(
-        Uri.parse(
-            url),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
+      try {
+        String url =
+            "http://10.136.110.36:9091/api/mbanking-service/AuthorizationService/api/v1/authorization/authorize-requests?token=$token";
+
+        final response = await http.get(
+          Uri.parse(url),
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
           },
-      );
-      setState(() {
-        final de = jsonDecode(response.body);
-        rtaGetStatusResponse = de.toString();
-      });
-    }
-    catch(e){
-      setState(() {
-        errorDisplay = "error to get RTA: " + e.toString();
-      });
-    }
+        );
+        setState(() {
+          final de = jsonDecode(response.body);
+          rtaGetStatusResponse = de.toString();
+        });
+      } catch (e) {
+        setState(() {
+          errorDisplay = "error to get RTA: $e";
+        });
+      }
     }
 
     return SingleChildScrollView(
@@ -118,12 +112,10 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
             ),
             const SizedBox(height: 20),
             InkWell(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: Text(bankAppUrl)
-              ),
-              onTap: () => launchUrlString(bankAppUrl)
-            ),
+                child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    child: Text(bankAppUrl)),
+                onTap: () => launchUrlString(bankAppUrl)),
             Text(errorDisplay),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -139,8 +131,8 @@ class _OnboardingGenerateRTAState extends State<OnboardingGenerateRTA> {
                 child: const Text("Get RTA Status")),
             const SizedBox(height: 20),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: Text(rtaGetStatusResponse)),
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: Text(rtaGetStatusResponse)),
             const SizedBox(height: 20),
           ],
         ),
