@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:onboarding_integration/page/onboarding.dart';
 import 'dart:async';
 
 import 'package:onboarding_integration/page/sign_up_screen.dart';
