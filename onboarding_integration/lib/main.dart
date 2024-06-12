@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:onboarding_integration/page/onboarding.dart';
 import 'dart:async';
 
+import 'package:onboarding_integration/page/sign_up_screen.dart';
+
 void main() {
-  runApp(const MyApp());
+ runApp(
+  ProviderScope(
+    child: const MyApp()),
+  );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatefulWidget {  
   const MyApp({super.key});
 
   @override
@@ -31,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'BeMerchant Nextgen Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -53,7 +59,7 @@ class MyHomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
-      body: const OnboardingGenerateRTA(),
+      body: SignUpScreen(),
     );
   }
 }
