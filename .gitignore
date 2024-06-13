@@ -46,3 +46,10 @@ onboarding_integration/macos/Flutter/GeneratedPluginRegistrant.swift
 onboarding_integration/linux/flutter/generated_plugins.cmake
 onboarding_integration/linux/flutter/generated_plugin_registrant.h
 onboarding_integration/linux/flutter/generated_plugin_registrant.cc
+onboarding_integration/windows/flutter/generated_plugins.cmake
+onboarding_integration/windows/flutter/generated_plugin_registrant.h
+onboarding_integration/windows/flutter/generated_plugin_registrant.cc
+onboarding_integration/macos/Flutter/GeneratedPluginRegistrant.swift
+onboarding_integration/linux/flutter/generated_plugins.cmake
+onboarding_integration/linux/flutter/generated_plugin_registrant.h
+onboarding_integration/linux/flutter/generated_plugin_registrant.cc
