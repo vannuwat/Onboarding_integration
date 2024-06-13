@@ -1,14 +1,22 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:onboarding_integration/api/api.dart';
 import 'package:onboarding_integration/custom_widgets/button_style.dart';
 import 'package:onboarding_integration/page/sms_verification_screen.dart';
 
-class InputMobile extends StatefulWidget {
+final refIdProvider = StateProvider<String>((ref) => "");
+final textEditingProvider = StateProvider.autoDispose<bool>((ref) => false);
+final checkProvider = StateProvider.autoDispose<bool>((ref) => false);
+
+
+class InputMobile extends ConsumerStatefulWidget  {
   @override
-  State<InputMobile> createState() => _InputMobileState();
+  _InputMobileState createState() => _InputMobileState();
 }
 
-class _InputMobileState extends State<InputMobile> {
+class _InputMobileState extends ConsumerState<InputMobile> {
   late TextEditingController _controller;
   late bool _isChecked;
 
@@ -39,7 +47,7 @@ class _InputMobileState extends State<InputMobile> {
               height: 50,
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text("Sign up",
+              Text(tr("signUp"),
                   style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
@@ -47,7 +55,7 @@ class _InputMobileState extends State<InputMobile> {
               SizedBox(
                 height: 30,
               ),
-              Text("Phone Number",
+              Text(tr("phoneNo"),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
               SizedBox(
                 height: 10,
@@ -75,7 +83,7 @@ class _InputMobileState extends State<InputMobile> {
                       Checkbox(
                         activeColor: Colors.blue,
                           value: _isChecked,
-                          onChanged: (bool? value) {
+                          onChanged: (bool? value) {                          
                             setState(() {
                               _isChecked = value!;
                             });
@@ -86,9 +94,9 @@ class _InputMobileState extends State<InputMobile> {
                           text: TextSpan(
                             style: DefaultTextStyle.of(context).style,
                             children: <TextSpan>[
-                              TextSpan(text: "I agree to Bangkok Bank's "),
+                              TextSpan(text: tr("agreeMsg1")),
                               TextSpan(
-                                text: "terms and conditions",
+                                text: tr('term'),
                                 style: TextStyle(color: Colors.blue),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
@@ -96,9 +104,9 @@ class _InputMobileState extends State<InputMobile> {
                                   },
                               ),
                               TextSpan(
-                                  text: ", and I agree to share the personal information which is necessary for registration with “BBL Wallet” regarding "),
+                                  text: tr('agreeMsg2')),
                               TextSpan(
-                                  text: "Privacy Policy.",
+                                  text: tr('privacy'),
                                   style: TextStyle(color: Colors.blue),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
@@ -122,7 +130,7 @@ class _InputMobileState extends State<InputMobile> {
                                 return AlertDialog(
                                     title: const Text('Warning'),
                                     content: Text(
-                                        '${_controller.text}${" is not a phone numbers"}'),
+                                        '${_controller.text}${tr("notPhoneNo")}'),
                                     actions: <Widget>[
                                       TextButton(
                                           onPressed: () {
@@ -132,20 +140,24 @@ class _InputMobileState extends State<InputMobile> {
                                               _isChecked = false;
                                             });
                                           },
-                                          child: Text("OK"))
+                                          child: Text(tr('ok')))
                                     ]);
                               });
                         }
                         else{
+                          final String language = context.locale == Locale('en') ? 'EN' : 'TH';  
+                          final otpResponse = await requestOtp('0${_controller.text}', language);
+                          ref.read(refIdProvider.notifier).state = otpResponse.refId!;
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => SmsVerificationScreen(phoneNo: _controller.text)),
+                            MaterialPageRoute(builder: (context) => SmsVerificationScreen(phoneNo: _controller.text)),                            
                           );
                         }
                       },
-                      text: "Confirm")
+                      text: tr('confirm'))
                 ]),
           ),
         ])));
   }
 }
+

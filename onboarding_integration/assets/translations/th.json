@@ -1,0 +1,28 @@
+{
+    "en": "EN",
+    "th": "TH",
+    "confirm" : "ยืนยัน",
+    "ok" : "ตกลง",
+ 
+    "_FirstScreen" : "First Screen Localization here",
+    "hello" : "Hello",
+    "welcome" : "Welcome to BBL Wallet",
+    "dontHave" : "Don't have account?",
+    "signIn" : "Sign in",
+    
+    "_SignUpScreen" : "Sign Up Screen Localization here",
+    "signUp" : "ลงทะเบียน",
+    "phoneNo": "หมายเลขโทรศัพท์มือถือ",
+    "agreeMsg1" : "I agree to Bangkok Bank's ",
+    "agreeMsg2" : ", and I agree to share the personal information which is necessary for registration with “BBL Wallet” regarding ",
+    "term" : "terms and conditions",
+    "privacy" : "Privacy Policy.",
+    "notPhoneNo" : " ไม่ใช่เบอร์มือถือ",
+
+    "_SmsScreen" : "SMS Verification Screen Localization here",
+    "smsTitle": "การยืนยันทาง SMS",
+    "otp": "OTP ได้ส่งไปที่โทรศัพท์มือถือของคุณ",
+    "code": "Code reference: ",
+    "invalidOtp": "OTP ไม่ถูกต้อง",
+    "resend": "ส่ง OTP ใหม่"
+}

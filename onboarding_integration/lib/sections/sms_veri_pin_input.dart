@@ -1,5 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onboarding_integration/api/api.dart';
+import 'package:onboarding_integration/sections/input_mobile.dart';
+import 'package:onboarding_integration/sections/sms_veri_body.dart';
 import 'package:pinput/pinput.dart';
 import 'package:onboarding_integration/custom_widgets/button_style.dart';
 import 'package:onboarding_integration/page/success_screen.dart';
@@ -7,6 +11,7 @@ import 'package:onboarding_integration/page/success_screen.dart';
 final pinEditingControllerProvider = StateProvider.autoDispose<TextEditingController>((ref) => TextEditingController());
 final pinInputCompleteProvider = StateProvider.autoDispose<bool>((ref) => false);
 final errorMessageProvider = StateProvider.autoDispose<bool>((ref) => false);
+final resendOtpProvider = StateProvider.autoDispose<bool>((ref) => false);
  
 class PinInput extends ConsumerWidget {
   final ValueChanged<String>? onSubmit;
@@ -15,6 +20,7 @@ class PinInput extends ConsumerWidget {
   final BoxDecoration? submittedFieldDecoration;
   final BoxDecoration? selectedFieldDecoration;
   final BoxDecoration? followingFieldDecoration;
+  final String phoneNo; 
 
   const PinInput({
     Key? key,
@@ -24,6 +30,7 @@ class PinInput extends ConsumerWidget {
     this.submittedFieldDecoration,
     this.selectedFieldDecoration,
     this.followingFieldDecoration,
+    required this.phoneNo,    
   }) : super(key: key);
   
   @override
@@ -91,10 +98,12 @@ class PinInput extends ConsumerWidget {
           child: CustomButtonStyle(
             isBlack: ref.watch(pinInputCompleteProvider),
             text: "Confirm",
-            onPressed: !ref.watch(pinInputCompleteProvider)? null : () {
+            onPressed: !ref.watch(pinInputCompleteProvider)? null : () async {
               final pin = pinEditingController.text;
-              // Check if input OTP match OTP send to SMS 
-              if (pin == '123456') {
+              final refId = ref.read(refIdProvider);
+              // Check if input OTP match OTP send to SMS                
+              final isSuccess = await verifyOtp(refId, pin);              
+              if (isSuccess.success!) {
                 // Navigate to the next screen and send API to create account if OTP is correct
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => SuccessScreen()),
@@ -102,15 +111,18 @@ class PinInput extends ConsumerWidget {
               } else {
                 // Set stage to show an error message if OTP is incorrect
                 ref.read(errorMessageProvider.notifier).state = true;              
-              }
+              }         
             },
           ),
         ),
         SizedBox(height: 16),
         GestureDetector(
-          onTap: (){
-            // Resend OTP    
-          
+          onTap: () async {
+          // Resend OTP    
+          final String language = context.locale == Locale('en') ? 'EN' : 'TH';
+          final otpResponse = await requestOtp('0$phoneNo', language);      
+          ref.read(resendOtpProvider.notifier).state = true;           
+          ref.read(refIdProvider.notifier).state = otpResponse.refId!;       
           },
           child: Text("Resend OTP",
             textAlign: TextAlign.left, 
@@ -118,6 +130,12 @@ class PinInput extends ConsumerWidget {
             ),
           ),  
         ),
+        SizedBox(height: 10),
+        ref.watch(resendOtpProvider)
+          ? Text("Resend OTP successful",            
+              textAlign: TextAlign.left, 
+              style: TextStyle(fontSize: 14, color: Color.fromARGB(234, 161, 202, 25)))
+          : SizedBox(),   
       ],
     );
   }
