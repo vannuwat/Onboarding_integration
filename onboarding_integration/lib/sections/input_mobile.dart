@@ -44,7 +44,7 @@ class _InputMobileState extends ConsumerState<InputMobile> {
         child: Column(children: [
           Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
             SizedBox(
-              height: 50,
+              height: 20,
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(tr("signUp"),
@@ -53,7 +53,7 @@ class _InputMobileState extends ConsumerState<InputMobile> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black)),
               SizedBox(
-                height: 30,
+                height: 20,
               ),
               Text(tr("phoneNo"),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
@@ -71,7 +71,7 @@ class _InputMobileState extends ConsumerState<InputMobile> {
               ),
             ])
           ]),
-          SizedBox(height: 50),
+          SizedBox(height: 25),
           Container(
             alignment: Alignment.center,
             width: MediaQuery.of(context).size.width * 0.75,
