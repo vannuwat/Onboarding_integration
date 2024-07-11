@@ -1,0 +1,10 @@
+services:
+  flutter-sdk:
+    build: .
+    volumes:
+      - .:/root/app
+      - /root/app/build
+      - /root/app/.dart_tool
+    working_dir: /root/app
+    entrypoint: bash -c "git config --global --add safe.directory /home/mobiledevops/.flutter-sdk && cat aliases.bashrc > ~/.bashrc && bash"
+    tty: true

@@ -1,3 +1,4 @@
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -94,6 +95,8 @@ class _QRScannerWidgetState extends State<QRScannerWidget> {
         Expanded(
           flex: 1,
           child: GestureDetector(
+            onDoubleTap: _handleDoubleTap,
+            onLongPress: _handleLongPress,
             onTap: _handleTap,
             child: Text(
               'Open Link: ${_scannedUrl}',
@@ -133,8 +136,20 @@ class _QRScannerWidgetState extends State<QRScannerWidget> {
         .join('&');
   }
 
+  void _handleLongPress() async {
+    final AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      data: _scannedUrl,
+    );
+    await intent.launch();
+  }
+
+  void _handleDoubleTap() async {
+    await launchUrlString(_scannedUrl,
+        mode: LaunchMode.externalNonBrowserApplication);
+  }
+
   void _handleTap() async {
-    // await launchUrlString(_scannedUrl, mode: LaunchMode.externalApplication);
     await platform.invokeMethod('launchApp', {'launchUri': _scannedUrl});
   }
 }
