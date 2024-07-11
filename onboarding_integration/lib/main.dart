@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:onboarding_integration/page/sign_up_screen.dart';
-
-// void main() {
-//  runApp(
-//   const ProviderScope(
-//     child: MyApp()),
-//   );
-// }
+import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   runApp(ProviderScope(
     child: EasyLocalization(
-    supportedLocales:  const [Locale("en"), Locale("th")],     
-    path: 'assets/translations',      
-    child: const MyApp(),
-    ),      
-  ));  
+      supportedLocales: const [Locale("en"), Locale("th")],
+      path: 'assets/translations',
+      child: const MyApp(),
+    ),
+  ));
 }
 
-class MyApp extends StatefulWidget {  
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
@@ -32,19 +26,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  StreamSubscription? _sub;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _sub?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -74,7 +55,88 @@ class MyHomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
-      body: SignUpScreen(),
+      body: const QRScannerWidget(),
     );
   }
 }
+
+class QRScannerWidget extends StatefulWidget {
+  const QRScannerWidget({super.key});
+
+  @override
+  _QRScannerWidgetState createState() => _QRScannerWidgetState();
+}
+
+class _QRScannerWidgetState extends State<QRScannerWidget> {
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  String _scannedUrl = '';
+  // Uri? launchUri;
+  QRViewController? _controller;
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          flex: 5,
+          child: QRView(
+            key: qrKey,
+            onQRViewCreated: _onQRViewCreated,
+          ),
+        ),
+        // if (_scannedUrl != null)
+        Expanded(
+          flex: 1,
+          child: GestureDetector(
+            onTap: _handleTap,
+            child: Text(
+              'Open Link: ${_scannedUrl}',
+              style: TextStyle(
+                color: Colors.blue,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    _controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        _scannedUrl = scanData.code!;
+        // launchUri = Uri(
+        //   scheme: 'bualuangmbankingapp',
+        //   path: 'mbanking.beMerchantAuthen',
+        //   query: encodeQueryParameters(<String, String>{
+        //     'token': _scannedUrl,
+        //     'callback_url': 'bemerchantnextgen://'
+        //   }),
+        // );
+        controller.pauseCamera();
+      });
+    });
+  }
+
+  String encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((MapEntry<String, String> e) =>
+            '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+  }
+
+  void _handleTap() async {
+    // await launchUrlString(_scannedUrl, mode: LaunchMode.externalApplication);
+    await platform.invokeMethod('launchApp', {'launchUri': _scannedUrl});
+  }
+}
+
+const platform = MethodChannel('samples.flutter.dev/battery');
